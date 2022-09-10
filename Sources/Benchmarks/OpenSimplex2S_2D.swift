@@ -3,8 +3,8 @@ import NoiseV2
 
 let size2d = 300.0
 
-let openSimplex2SBenchmarks = BenchmarkSuite(
-    name: "Open Simplex 2S",
+let openSimplex2S_2D = BenchmarkSuite(
+    name: "Open Simplex 2S 2D",
     settings: Iterations(1000)
 ) { suite in
     suite.benchmark("Classic") {

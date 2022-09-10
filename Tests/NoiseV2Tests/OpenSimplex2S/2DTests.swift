@@ -1,7 +1,7 @@
 @testable import NoiseV2
 import XCTest
 
-final class NoiseTests: XCTestCase {
+final class OpenSimplex2S_2D_Tests: XCTestCase {
     let noise = OpenSimplex2S(seed: 3301, variant2D: .classic)
 
     func assert(value: Double, expectation: Double, file: StaticString = #file, line: UInt = #line) {
@@ -30,7 +30,17 @@ final class NoiseTests: XCTestCase {
         assert(value: 12, expectation: 0.27647024393081665)
     }
 
-    func _testFinder() {
+    func testExpectedRange() {
+        let expectedRange: ClosedRange<Double> = -1 ... 1
+        for _ in 1 ... 1_000_000 {
+            let x: Double = .random(in: -1000 ... 1000)
+            let y: Double = .random(in: -1000 ... 1000)
+            let value = noise.evaluate(x, y)
+            XCTAssertTrue(expectedRange.contains(value), "Out of bounds: value \(value) for x: \(x), y: \(y)")
+        }
+    }
+
+    func _test_find_values() {
         let noise = OpenSimplex2S(seed: 3301, variant2D: .classic)
         while true {
             let value = Double.random(in: 1 ... 100)

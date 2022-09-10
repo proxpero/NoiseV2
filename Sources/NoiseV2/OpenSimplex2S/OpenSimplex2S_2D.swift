@@ -1,14 +1,8 @@
-public struct OpenSimplex2S_2D {
-    let seed: Int
-    let variant: Variant2D
-
-    public init(seed: Int, variant: Variant2D) {
-        self.seed = seed
-        self.variant = variant
-    }
-
+extension OpenSimplex2S {
     public func evaluate(_ x: Double, _ y: Double) -> Double {
-        switch variant {
+        let x = x * frequency
+        let y = y * frequency
+        switch variant2D {
         case .classic:
             let s = skew2D * (x + y)
             let xs = x + s
@@ -20,9 +14,7 @@ public struct OpenSimplex2S_2D {
             return Double(unskewedBase(yy + xx, yy - xx))
         }
     }
-}
-
-extension OpenSimplex2S_2D {
+    
     func unskewedBase(_ xs: Double, _ ys: Double) -> Float {
         let xsb = xs.rounded(.down)
         let ysb = ys.rounded(.down)

@@ -14,9 +14,9 @@ let package = Package(
         ),
     ],
     dependencies: [
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.9.0"),
         .package(url: "https://github.com/abertelrud/SwiftFormatPlugin.git", branch: "main"),
         .package(url: "https://github.com/google/swift-benchmark", from: "0.1.0"),
-
     ],
     targets: [
         .executableTarget(
@@ -38,7 +38,13 @@ let package = Package(
         ),
         .testTarget(
             name: "NoiseV2Tests",
-            dependencies: ["NoiseV2"]
+            dependencies: [
+                "NoiseV2",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ],
+            exclude: [
+                "OpenSimplex2S/__Snapshots__"
+            ]
         ),
     ]
 )

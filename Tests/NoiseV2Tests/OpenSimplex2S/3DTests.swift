@@ -2,7 +2,7 @@
 import XCTest
 
 final class OpenSimplex2S_3D_Tests: XCTestCase {
-    let noise = OpenSimplex2S_3D(seed: 3301, variant: .classic)
+    let noise = OpenSimplex2S(seed: 3301, variant3D: .classic)
 
     func testValues() {
         assert(value: -40.10296170490728, expectation: -0.28609031438827515)
@@ -20,11 +20,41 @@ final class OpenSimplex2S_3D_Tests: XCTestCase {
         XCTAssertEqual(result, expectation, accuracy: 1E-10, file: file, line: line)
     }
 
-    func test_find_values() {
+    func testExpectedRange() {
+        let expectedRange: ClosedRange<Double> = -1 ... 1
+        for _ in 1 ... 1_000_000 {
+            let x: Double = .random(in: -1000 ... 1000)
+            let y: Double = .random(in: -1000 ... 1000)
+            let z: Double = .random(in: -1000 ... 1000)
+            let value = noise.evaluate(x, y, z)
+            XCTAssertTrue(expectedRange.contains(value), "Out of bounds: value \(value) for x: \(x), y: \(y), z: \(z)")
+        }
+    }
+
+    func _test_find_values() {
         while true {
             let candidate = Double.random(in: 0 ... 10)
             print(candidate, -candidate, candidate * .pi)
             _ = noise.evaluate(candidate, -candidate, candidate * .pi)
         }
+    }
+
+    func testMatrix3D_1() {
+        let noise = OpenSimplex2S(seed: 1279, frequency: 0.007)
+        let size = 256
+        let matrix = noise.matrix3D(width: size, height: size, depth: size)
+        print(matrix.count)
+        print(matrix[0].count)
+        print(matrix[0][0].count)
+        animate(matrix: matrix, frameRate: 60, loop: true, path: "/Users/proxpero/Images/Animations/test4.gif")
+    }
+
+    func testMatrix3D_2() {
+        let noise = OpenSimplex2S(seed: 1279, frequency: 0.007)
+        let matrix = noise.matrix3D(size: -100 ... 100, samples: 257)
+        print(matrix.count)
+        print(matrix[0].count)
+        print(matrix[0][0].count)
+        animate(matrix: matrix, frameRate: 60, loop: true, path: "/Users/proxpero/Images/Animations/\(#function).gif")
     }
 }

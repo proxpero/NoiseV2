@@ -1,14 +1,9 @@
-public struct OpenSimplex2S_3D {
-    public let seed: Int
-    public let variant: Variant3D
-
-    public init(seed: Int, variant: Variant3D) {
-        self.seed = seed
-        self.variant = variant
-    }
-
+extension OpenSimplex2S {
     public func evaluate(_ x: Double, _ y: Double, _ z: Double) -> Double {
-        switch variant {
+        let x = x * frequency
+        let y = y * frequency
+        let z = z * frequency
+        switch variant3D {
         case .classic:
             let r = fallbackRotate3 * (x + y + z)
             let xr = r - x
@@ -35,7 +30,7 @@ public struct OpenSimplex2S_3D {
     }
 }
 
-extension OpenSimplex2S_3D {
+extension OpenSimplex2S {
     func unrotatedBase(xr: Double, yr: Double, zr: Double) -> Double {
         let xrb = xr.rounded(.down)
         let yrb = yr.rounded(.down)
