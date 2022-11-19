@@ -12,9 +12,9 @@ protocol NoiseSource {
 extension NoiseSource {
     func matrix2D(width: Int, height: Int) -> [[Output]] {
         var result: [[Double]] = []
-        for y in 0 ..< width {
+        for y in 0 ..< height {
             var line: [Output] = []
-            for x in 0 ..< height {
+            for x in 0 ..< width {
                 let value = evaluate(Output(x), Output(y))
                 line.append(value)
             }

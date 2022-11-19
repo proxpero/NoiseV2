@@ -49,12 +49,42 @@ extension NSImage {
 }
 
 extension CGImage {
-    public static func image(from values: [[Double]]) -> CGImage {
-        let values = values.map(current: values.minMax(), target: 0 ... 255)
+    public static func image(from pixels: [[Pixel]]) -> CGImage {
         let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
-        let width = values.count
-        let height = values[0].count
+        let width = pixels[0].count
+        let height = pixels.count
+        let componentCount = 4
+        let byteCount = height * width * componentCount
+        let pixelData: [UInt8] = pixels.flatMap { row in
+            row.flatMap { pixel in
+                return pixel.values
+            }
+        }
+        assert(byteCount == pixelData.count)
+
         let bitsPerComponent: Int = 8
+        let rgbData = CFDataCreate(nil, pixelData, byteCount)!
+        let provider = CGDataProvider(data: rgbData)!
+        return CGImage(
+            width: width,
+            height: height,
+            bitsPerComponent: bitsPerComponent,
+            bitsPerPixel: bitsPerComponent * componentCount,
+            bytesPerRow: width * componentCount,
+            space: rgbColorSpace,
+            bitmapInfo: .init(rawValue: CGImageAlphaInfo.noneSkipLast.rawValue),
+            provider: provider,
+            decode: nil,
+            shouldInterpolate: true,
+            intent: CGColorRenderingIntent.defaultIntent
+        )!
+    }
+
+    public static func image(from values: [[Double]]) -> CGImage {
+        let values = values.map(current: -1 ... 1, target: 0 ... 255)
+        let rgbColorSpace = CGColorSpaceCreateDeviceRGB()
+        let width = values[0].count
+        let height = values.count
         let componentCount = 4
         let byteCount = height * width * componentCount
         let pixelData: [UInt8] = values.flatMap { row in
@@ -64,6 +94,7 @@ extension CGImage {
         }
         assert(byteCount == pixelData.count)
 
+        let bitsPerComponent: Int = 8
         let rgbData = CFDataCreate(nil, pixelData, byteCount)!
         let provider = CGDataProvider(data: rgbData)!
         return CGImage(
@@ -193,8 +224,8 @@ extension Array where Element == [Double] {
 
     func map(current: ClosedRange<Double>, target: ClosedRange<Double>) -> [[Double]] {
         var result = self
-        for j in result.indices {
-            for i in self[j].indices {
+        for i in result.indices {
+            for j in self[i].indices {
                 result[i][j] = result[i][j].map(current: current, target: target)
             }
         }
