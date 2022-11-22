@@ -43,13 +43,13 @@ final class OpenSimplex2S_3D_Tests: XCTestCase {
     func testMatrix3D_1() {
         let noise = OpenSimplex2S(seed: 1279, frequency: 0.007)
         let size = 256
-        let matrix = noise.matrix3D(width: size, height: size, depth: size)
+        let matrix: Matrix3D = .monochrome(width: size, height: size, depth: size, evaluate: noise.evaluate(_:_:_:))
         matrix.animated(frameRate: 60, filepath: "/Users/proxpero/Images/Animations/test4.gif")
     }
 
     func testMatrix3D_2() {
         let noise = OpenSimplex2S(seed: 1279, frequency: 0.007)
-        let matrix = noise.matrix3D(width: 200, height: 100, depth: 200)
+        let matrix: Matrix3D = .monochrome(width: 200, height: 100, depth: 200, evaluate: noise.evaluate(_:_:_:))
         matrix.animated(frameRate: 60, filepath: "/Users/proxpero/Images/Animations/\(#function).gif")
     }
 }

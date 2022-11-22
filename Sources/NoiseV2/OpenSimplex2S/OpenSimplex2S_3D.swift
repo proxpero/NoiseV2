@@ -5,27 +5,30 @@ extension OpenSimplex2S {
         let z = z * frequency
         switch variant3D {
         case .classic:
-            let r = fallbackRotate3 * (x + y + z)
-            let xr = r - x
-            let yr = r - y
-            let zr = r - z
-            return unrotatedBase(xr: xr, yr: yr, zr: zr)
+            let r = .fallbackRotate3 * (x + y + z)
+            return unrotatedBase(
+                xr: r - x,
+                yr: r - y,
+                zr: r - z
+            )
         case .improveXY:
             let xy = x + y
-            let s2 = xy * rotate3Orthagonalizer
-            let zz = z * root3over3
-            let xr = x + s2 + zz
-            let yr = y + s2 + zz
-            let zr = xy * -root3over3 + zz
-            return unrotatedBase(xr: xr, yr: yr, zr: zr)
+            let s2 = xy * .rotate3Orthagonalizer
+            let zz = z * .root3over3
+            return unrotatedBase(
+                xr: x + s2 + zz,
+                yr: y + s2 + zz,
+                zr: xy * -.root3over3 + zz
+            )
         case .improveXZ:
             let xz = x + z
             let s2 = xz * -0.211324865405187
-            let yy = y * root3over3
-            let xr = x + s2 + yy
-            let zr = z + s2 + yy
-            let yr = xz * -root3over3 + yy
-            return unrotatedBase(xr: xr, yr: yr, zr: zr)
+            let yy = y * .root3over3
+            return unrotatedBase(
+                xr: x + s2 + yy,
+                yr: xz * -.root3over3 + yy,
+                zr: z + s2 + yy
+            )
         }
     }
 }
@@ -41,9 +44,9 @@ extension OpenSimplex2S {
         let zi = zr - zrb
 
         // Prime pre-multiplication for hash. Also flip seed for second lattice copy.
-        let xrbp = Int(xrb).multipliedReportingOverflow(by: primeX).partialValue
-        let yrbp = Int(yrb).multipliedReportingOverflow(by: primeY).partialValue
-        let zrbp = Int(zrb).multipliedReportingOverflow(by: primeZ).partialValue
+        let xrbp = Int(xrb).multipliedReportingOverflow(by: .primeX).partialValue
+        let yrbp = Int(yrb).multipliedReportingOverflow(by: .primeY).partialValue
+        let zrbp = Int(zrb).multipliedReportingOverflow(by: .primeZ).partialValue
         let seed2 = seed ^ -0x52D547B2E96ED629
 
         let xNMask = Int(-0.5 - xi)
@@ -51,11 +54,11 @@ extension OpenSimplex2S {
         let zNMask = Int(-0.5 - zi)
 
         // First vertex.
-        let x0 = Double(xi) + Double(xNMask)
-        let y0 = Double(yi) + Double(yNMask)
-        let z0 = Double(zi) + Double(zNMask)
+        let x0 = xi + Double(xNMask)
+        let y0 = yi + Double(yNMask)
+        let z0 = zi + Double(zNMask)
 
-        let a0 = rSquared3D - x0 * x0 - y0 * y0 - z0 * z0
+        let a0 = .rSquared3D - x0 * x0 - y0 * y0 - z0 * z0
 
         var result = 0.0
 
@@ -68,7 +71,7 @@ extension OpenSimplex2S {
             let x = x0 + dx
             let y = y0 + dy
             let z = z0 + dz
-            let a = a ?? rSquared3D - x * x - y * y - z * z
+            let a = a ?? .rSquared3D - x * x - y * y - z * z
             result += (a * a) * (a * a) * Self.grad(
                 seed: seed,
                 xrvp: xrbp.addingReportingOverflow(xrbpm).partialValue,
@@ -81,18 +84,18 @@ extension OpenSimplex2S {
         // First vertex
         updateResult(
             seed: seed,
-            xrbpm: xNMask & primeX,
-            yrbpm: yNMask & primeY,
-            zrbpm: zNMask & primeZ,
+            xrbpm: xNMask & .primeX,
+            yrbpm: yNMask & .primeY,
+            zrbpm: zNMask & .primeZ,
             dx: 0, dy: 0, dz: 0
         )
 
         // Second vertex
         updateResult(
             seed: seed2,
-            xrbpm: primeX,
-            yrbpm: primeY,
-            zrbpm: primeZ,
+            xrbpm: .primeX,
+            yrbpm: .primeY,
+            zrbpm: .primeZ,
             dx: -Double(xNMask) - 0.5,
             dy: -Double(yNMask) - 0.5,
             dz: -Double(zNMask) - 0.5
@@ -101,7 +104,7 @@ extension OpenSimplex2S {
         let x1 = xi - 0.5
         let y1 = yi - 0.5
         let z1 = zi - 0.5
-        let a1 = rSquared3D - x1 * x1 - y1 * y1 - z1 * z1
+        let a1 = .rSquared3D - x1 * x1 - y1 * y1 - z1 * z1
 
         let xAFlipMask0 = Double((xNMask | 1) << 1) * x1
         let yAFlipMask0 = Double((yNMask | 1) << 1) * y1
@@ -115,7 +118,7 @@ extension OpenSimplex2S {
         if a2 > 0 {
             updateResult(
                 a: a2, seed: seed,
-                xrbpm: ~xNMask & primeX, yrbpm: yNMask & primeY, zrbpm: zNMask & primeZ,
+                xrbpm: ~xNMask & .primeX, yrbpm: yNMask & .primeY, zrbpm: zNMask & .primeZ,
                 dx: -Double(xNMask | 1), dy: 0, dz: 0
             )
         } else {
@@ -123,7 +126,7 @@ extension OpenSimplex2S {
             if a3 > 0 {
                 updateResult(
                     a: a3, seed: seed,
-                    xrbpm: xNMask & primeX, yrbpm: ~yNMask & primeY, zrbpm: ~zNMask & primeZ,
+                    xrbpm: xNMask & .primeX, yrbpm: ~yNMask & .primeY, zrbpm: ~zNMask & .primeZ,
                     dx: 0, dy: -Double(yNMask | 1), dz: -Double(zNMask | 1)
                 )
             }
@@ -132,7 +135,7 @@ extension OpenSimplex2S {
             if a4 > 0 {
                 updateResult(
                     a: a4, seed: seed2,
-                    xrbpm: xNMask & (primeX.multipliedReportingOverflow(by: 2).partialValue), yrbpm: primeY, zrbpm: primeZ,
+                    xrbpm: xNMask & (.primeX.multipliedReportingOverflow(by: 2).partialValue), yrbpm: .primeY, zrbpm: .primeZ,
                     dx: Double(xNMask | 1) + x1 - x0, dy: y1 - y0, dz: z1 - z0
                 )
                 skip5 = true
@@ -144,7 +147,7 @@ extension OpenSimplex2S {
         if a6 > 0 {
             updateResult(
                 a: a6, seed: seed,
-                xrbpm: xNMask & primeX, yrbpm: ~yNMask & primeY, zrbpm: zNMask & primeZ,
+                xrbpm: xNMask & .primeX, yrbpm: ~yNMask & .primeY, zrbpm: zNMask & .primeZ,
                 dx: 0, dy: -Double(yNMask | 1), dz: 0
             )
         } else {
@@ -152,7 +155,7 @@ extension OpenSimplex2S {
             if a7 > 0 {
                 updateResult(
                     a: a7, seed: seed,
-                    xrbpm: ~xNMask & primeX, yrbpm: yNMask & primeY, zrbpm: ~zNMask & primeZ,
+                    xrbpm: ~xNMask & .primeX, yrbpm: yNMask & .primeY, zrbpm: ~zNMask & .primeZ,
                     dx: -Double(xNMask | 1), dy: 0, dz: -Double(zNMask | 1)
                 )
             }
@@ -161,7 +164,7 @@ extension OpenSimplex2S {
             if a8 > 0 {
                 updateResult(
                     a: a8, seed: seed2,
-                    xrbpm: primeX, yrbpm: yNMask & (primeY << 1), zrbpm: primeZ,
+                    xrbpm: .primeX, yrbpm: yNMask & (.primeY << 1), zrbpm: .primeZ,
                     dx: x1 - x0, dy: Double(yNMask | 1) + y1 - y0, dz: z1 - z0
                 )
                 skip9 = true
@@ -173,7 +176,7 @@ extension OpenSimplex2S {
         if aA > 0 {
             updateResult(
                 a: aA, seed: seed,
-                xrbpm: xNMask & primeX, yrbpm: yNMask & primeY, zrbpm: ~zNMask & primeZ,
+                xrbpm: xNMask & .primeX, yrbpm: yNMask & .primeY, zrbpm: ~zNMask & .primeZ,
                 dx: 0, dy: 0, dz: -Double(zNMask | 1)
             )
         } else {
@@ -181,7 +184,7 @@ extension OpenSimplex2S {
             if aB > 0 {
                 updateResult(
                     a: aB, seed: seed,
-                    xrbpm: ~xNMask & primeX, yrbpm: ~yNMask & primeY, zrbpm: zNMask & primeZ,
+                    xrbpm: ~xNMask & .primeX, yrbpm: ~yNMask & .primeY, zrbpm: zNMask & .primeZ,
                     dx: -Double(xNMask | 1), dy: -Double(yNMask | 1), dz: 0
                 )
             }
@@ -190,7 +193,7 @@ extension OpenSimplex2S {
             if aC > 0 {
                 updateResult(
                     a: aC, seed: seed2,
-                    xrbpm: primeX, yrbpm: primeY, zrbpm: zNMask & (primeZ << 1),
+                    xrbpm: .primeX, yrbpm: .primeY, zrbpm: zNMask & (.primeZ << 1),
                     dx: x1 - x0, dy: y1 - y0, dz: Double(zNMask | 1) + z1 - z0
                 )
                 skipD = true
@@ -202,7 +205,7 @@ extension OpenSimplex2S {
             if a5 > 0 {
                 updateResult(
                     a: a5, seed: seed2,
-                    xrbpm: primeX, yrbpm: yNMask & (primeY << 1), zrbpm: zNMask & (primeZ << 1),
+                    xrbpm: .primeX, yrbpm: yNMask & (.primeY << 1), zrbpm: zNMask & (.primeZ << 1),
                     dx: x1 - x0, dy: Double(yNMask | 1) + y1 - y0, dz: Double(zNMask | 1) + z1 - z0)
             }
         }
@@ -212,7 +215,7 @@ extension OpenSimplex2S {
             if a9 > 0 {
                 updateResult(
                     a: a9, seed: seed2,
-                    xrbpm: xNMask & primeX.multipliedReportingOverflow(by: 2).partialValue, yrbpm: primeY, zrbpm: zNMask & (primeZ << 1),
+                    xrbpm: xNMask & .primeX.multipliedReportingOverflow(by: 2).partialValue, yrbpm: .primeY, zrbpm: zNMask & (.primeZ << 1),
                     dx: Double(xNMask | 1) + x1 - x0, dy: y1 - y0, dz: Double(zNMask | 1) + z1 - z0
                 )
             }
@@ -223,20 +226,20 @@ extension OpenSimplex2S {
             if aD > 0 {
                 updateResult(
                     a: aD, seed: seed2,
-                    xrbpm: xNMask & (primeX << 1), yrbpm: yNMask & (primeY << 1), zrbpm: primeZ,
+                    xrbpm: xNMask & (.primeX << 1), yrbpm: yNMask & (.primeY << 1), zrbpm: .primeZ,
                     dx: Double(xNMask | 1) + x1 - x0, dy: Double(yNMask | 1) + y1 - y0, dz: z1 - z0
                 )
             }
         }
 
-        return Double(result)
+        return result
     }
 
     static func grad(seed: Int, xrvp: Int, yrvp: Int, zrvp: Int, dx: Double, dy: Double, dz: Double) -> Double {
         var hash = (seed ^ xrvp) ^ (yrvp ^ zrvp)
-        hash = hash.multipliedReportingOverflow(by: hashMultiplier).partialValue
-        hash = hash ^ (hash >> (64 - nGrads3DExponent + 2))
-        let gi = Int(Int(truncatingIfNeeded: hash) & ((nGrads3D - 1) << 2))
+        hash = hash.multipliedReportingOverflow(by: .hashMultiplier).partialValue
+        hash = hash ^ (hash >> (64 - .nGrads3DExponent + 2))
+        let gi = Int(Int(truncatingIfNeeded: hash) & ((.nGrads3D - 1) << 2))
         return gradient3d[gi | 0] * dx + gradient3d[gi | 1] * dy + gradient3d[gi | 2] * dz
     }
 }

@@ -20,7 +20,7 @@ final class OpenSimplex2STests: XCTestCase {
 
     func testMatrix2() {
         noise.frequency = 0.007
-        let matrix = noise.matrix2D(width: width, height: height)
+        let matrix: Matrix2D = .monochrome(width: width, height: height, evaluate: noise.evaluate(_:_:))
         assertSnapshot(matching: matrix.image, as: .image)
     }
 
@@ -31,7 +31,7 @@ final class OpenSimplex2STests: XCTestCase {
         let sum = noise
             .added(to: other)
             .mapping(current: -2 ... 2, target: -1 ... 1)
-        let matrix = sum.matrix2D(width: width, height: height)
+        let matrix: Matrix2D = .monochrome(width: width, height: height, evaluate: sum.evaluate(_:_:))
         assertSnapshot(matching: matrix.image, as: .image)
     }
 }

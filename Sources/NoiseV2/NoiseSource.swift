@@ -12,20 +12,6 @@ protocol NoiseSource {
 }
 
 extension NoiseSource {
-    func matrix2D(width: Int, height: Int) -> Matrix2D {
-        Matrix2D(width: width, height: height) { x, y in
-            .init(monochrome: evaluate(x, y))
-        }
-    }
-
-    func matrix3D(width: Int, height: Int, depth: Int) -> Matrix3D {
-        Matrix3D(width: width, height: height, depth: depth) { x, y, z in
-            .init(monochrome: evaluate(x, y, z))
-        }
-    }
-}
-
-extension NoiseSource where Output: FloatingPoint {
     func added<S: NoiseSource>(to other: S, weight: Double = 0.5) -> some NoiseSource {
         AddedNoiseSource(s0: self, s1: other, weight: weight)
     }

@@ -54,3 +54,11 @@ public func smoothestStep(_ t: Double) -> Double {
     x += 35 * pow(t, 4)
     return x
 }
+
+public func safeMultiply<T: BinaryFloatingPoint>(_ value: T, _ factor: Int) -> Int {
+    Int(value).multipliedReportingOverflow(by: factor).partialValue
+}
+
+public func safeMultiply<T: BinaryInteger>(_ value: T, _ factor: Int) -> Int {
+    Int(value).multipliedReportingOverflow(by: factor).partialValue
+}

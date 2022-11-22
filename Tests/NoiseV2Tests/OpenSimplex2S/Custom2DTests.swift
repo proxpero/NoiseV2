@@ -1,3 +1,4 @@
+import Gypsum
 import Math
 import SnapshotTesting
 import XCTest
@@ -11,7 +12,7 @@ final class Custom2DTests: XCTestCase {
         let end = 0.7
 
         let noise: NoiseSource = Custom2D.horizontalSigmoid(start: start, end: end, width: width)
-        let matrix = noise.matrix2D(width: width, height: height)
+        let matrix: Matrix2D = .monochrome(width: width, height: height, evaluate: noise.evaluate(_:_:))
         
         assertSnapshot(matching: matrix.image, as: .image)
     }
@@ -25,7 +26,7 @@ final class Custom2DTests: XCTestCase {
         let r2 = 0.6 ... 0.8
         let end = 1.0
         let noise: NoiseSource = Custom2D.horizontalSigmoidDouble(start: start, r1: r1, middle: middle, r2: r2, end: end, width: width)
-        let matrix = noise.matrix2D(width: width, height: height)
+        let matrix: Matrix2D = .monochrome(width: width, height: height, evaluate: noise.evaluate(_:_:))
 
         assertSnapshot(matching: matrix.image, as: .image)
     }
@@ -46,8 +47,8 @@ final class Custom2DTests: XCTestCase {
             .mapping(current: -1 ... 1, target: -3 ... 3)
         let noise = br.added(to: sigmoid)
             .clamped(to: -1 ... 1)
-
-        assertSnapshot(matching: noise.matrix2D(width: width, height: height).image, as: .image)
+        let matrix: Matrix2D = .monochrome(width: width, height: height, evaluate: noise.evaluate(_:_:))
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 
     func testCustom2D() {
@@ -88,6 +89,7 @@ final class Custom2DTests: XCTestCase {
 
         let noise: NoiseSource = OpenSimplex2S(seed: 3, frequency: 0.004, variant2D: .improveX)
             .custom2D(transform: evaluate(_:_:))
-        assertSnapshot(matching: noise.matrix2D(width: width, height: height).image, as: .image)
+        let matrix: Matrix2D = .monochrome(width: width, height: height, evaluate: noise.evaluate(_:_:))
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 }

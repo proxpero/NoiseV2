@@ -4,13 +4,11 @@ extension OpenSimplex2S {
         let y = y * frequency
         switch variant2D {
         case .classic:
-            let s = skew2D * (x + y)
-            let xs = x + s
-            let ys = y + s
-            return unskewedBase(xs, ys)
+            let s = (x + y) * .skew2D
+            return unskewedBase(x + s, y + s)
         case .improveX:
-            let xx = x * root2over2
-            let yy = y * (root2over2 * (1 + 2 * skew2D))
+            let xx = x * .root2over2
+            let yy = y * (.root2over2 * (1 + 2 * .skew2D))
             return unskewedBase(yy + xx, yy - xx)
         }
     }
@@ -19,72 +17,75 @@ extension OpenSimplex2S {
         let xsb = xs.rounded(.down)
         let ysb = ys.rounded(.down)
 
-        let xi = Double(xs - xsb)
-        let yi = Double(ys - ysb)
+        let xi = xs - xsb
+        let yi = ys - ysb
 
-        let xsbp = Int(xsb).multipliedReportingOverflow(by: primeX).partialValue
-        let ysbp = Int(ysb).multipliedReportingOverflow(by: primeY).partialValue
+        let xsbp = Int(xsb).multipliedReportingOverflow(by: .primeX).partialValue
+        let ysbp = Int(ysb).multipliedReportingOverflow(by: .primeY).partialValue
 
         // Unskew
-        let t = (xi + yi) * unskew2D
+        let t = (xi + yi) * .unskew2D
         let dx0 = xi + t
         let dy0 = yi + t
 
         // First vertex
-        let a0 = rSquared2D - dx0 * dx0 - dy0 * dy0
+        let a0 = .rSquared2D - dx0 * dx0 - dy0 * dy0
 
         var result = 0.0
 
         func updateResult(
-            initialA: Double? = nil,
-            xp: Int, yp: Int,
-            dxa: Double, dya: Double
+            a: Double? = nil,
+            x: Int, y: Int,
+            dx: Double, dy: Double
         ) {
-            let dx = dx0 + dxa
-            let dy = dy0 + dya
-            let a = initialA ?? rSquared2D - dx * dx - dy * dy
+            let dx = dx0 + dx
+            let dy = dy0 + dy
+            let a = a ?? .rSquared2D - dx * dx - dy * dy
             guard a > 0 else { return }
             result += (a * a) * (a * a) * Self.grad(
                 seed: seed,
-                xsvp: xsbp.addingReportingOverflow(xp).partialValue, ysvp: ysbp.addingReportingOverflow(yp).partialValue,
+                xsvp: xsbp.addingReportingOverflow(x).partialValue,
+                ysvp: ysbp.addingReportingOverflow(y).partialValue,
                 dx: dx, dy: dy
             )
         }
 
-        updateResult(initialA: a0, xp: 0, yp: 0, dxa: 0, dya: 0)
+        updateResult(a: a0, x: 0, y: 0, dx: 0, dy: 0)
 
         // Second vertex.
         updateResult(
-            initialA: (2 * (1 + 2 * unskew2D) * (1 / unskew2D + 2)) * t + (-2 * (1 + 2 * unskew2D) * (1 + 2 * unskew2D) + a0),
-            xp: primeX, yp: primeY,
-            dxa: -(1 + 2 * unskew2D), dya: -(1 + 2 * unskew2D)
+            a: (2 * (1 + 2 * .unskew2D) * (1 / .unskew2D + 2)) * t + (-2 * (1 + 2 * .unskew2D) * (1 + 2 * .unskew2D) + a0),
+            x: .primeX,
+            y: .primeY,
+            dx: -(1 + 2 * .unskew2D),
+            dy: -(1 + 2 * .unskew2D)
         )
 
         let xmyi = xi - yi
 
-        if t < unskew2D {
+        if t < .unskew2D {
             if xi + xmyi > 1 {
-                updateResult(xp: primeX << 1, yp: primeY, dxa: -(3 * unskew2D + 2), dya: -(3 * unskew2D + 1))
+                updateResult(x: .primeX << 1, y: .primeY, dx: -(3 * .unskew2D + 2), dy: -(3 * .unskew2D + 1))
             } else {
-                updateResult(xp: 0, yp: primeY, dxa: -unskew2D, dya: -(unskew2D + 1))
+                updateResult(x: 0, y: .primeY, dx: -.unskew2D, dy: -(.unskew2D + 1))
             }
 
             if yi - xmyi > 1 {
-                updateResult(xp: primeX, yp: primeY << 1, dxa: -(3 * unskew2D + 1), dya: -(3 * unskew2D + 2))
+                updateResult(x: .primeX, y: .primeY << 1, dx: -(3 * .unskew2D + 1), dy: -(3 * .unskew2D + 2))
             } else {
-                updateResult(xp: primeX, yp: 0, dxa: -(unskew2D + 1), dya: -unskew2D)
+                updateResult(x: .primeX, y: 0, dx: -(.unskew2D + 1), dy: -.unskew2D)
             }
         } else {
             if xi + xmyi < 0 {
-                updateResult(xp: -primeX, yp: 0, dxa: 1 + unskew2D, dya: unskew2D)
+                updateResult(x: -.primeX, y: 0, dx: 1 + .unskew2D, dy: .unskew2D)
             } else {
-                updateResult(xp: primeX, yp: 0, dxa: -(unskew2D + 1), dya: -unskew2D)
+                updateResult(x: .primeX, y: 0, dx: -(.unskew2D + 1), dy: -.unskew2D)
             }
 
             if yi < xmyi {
-                updateResult(xp: 0, yp: -primeY, dxa: unskew2D, dya: unskew2D + 1)
+                updateResult(x: 0, y: -.primeY, dx: .unskew2D, dy: .unskew2D + 1)
             } else {
-                updateResult(xp: 0, yp: primeY, dxa: -unskew2D, dya: -(unskew2D + 1))
+                updateResult(x: 0, y: .primeY, dx: -.unskew2D, dy: -(.unskew2D + 1))
             }
         }
 
@@ -93,9 +94,9 @@ extension OpenSimplex2S {
 
     static func grad(seed: Int, xsvp: Int, ysvp: Int, dx: Double, dy: Double) -> Double {
         var hash = (seed ^ xsvp) ^ ysvp
-        hash = hash.multipliedReportingOverflow(by: hashMultiplier).partialValue
-        hash = hash ^ (hash >> (64 - nGrads2DExponent + 1))
-        let gi = Int(Int(truncatingIfNeeded: hash) & ((nGrads2D - 1) << 1))
+        hash = hash.multipliedReportingOverflow(by: .hashMultiplier).partialValue
+        hash = hash ^ (hash >> (64 - .nGrads2DExponent + 1))
+        let gi = Int(Int(truncatingIfNeeded: hash) & ((.nGrads2D - 1) << 1))
         return gradient2d[gi | 0] * dx + gradient2d[gi | 1] * dy
     }
 }

@@ -7,8 +7,7 @@ import XCTest
 final class ConstantTests: XCTestCase {
     func testConstantBlack() {
         let noise: NoiseSource = ConstantNoiseSource(value: -1)
-        let matrix = noise.matrix2D(width: 200, height: 200)
+        let matrix: Matrix2D = .monochrome(width: 200, height: 200, evaluate: noise.evaluate(_:_:))
         XCTAssertEqual(matrix, Matrix2D(width: 200, height: 200, fill: .black))
-        assertSnapshot(matching: matrix.image, as: .image)
     }
 }
