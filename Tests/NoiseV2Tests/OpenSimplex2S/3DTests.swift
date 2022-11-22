@@ -1,18 +1,19 @@
-@testable import NoiseV2
+import Gypsum
 import XCTest
+@testable import NoiseV2
 
 final class OpenSimplex2S_3D_Tests: XCTestCase {
     let noise = OpenSimplex2S(seed: 3301, variant3D: .classic)
 
     func testValues() {
-        assert(value: -40.10296170490728, expectation: -0.28609031438827515)
-        assert(value: 54.06423169761942, expectation: 0.04659201577305794)
-        assert(value: 84.54465264447907, expectation: -0.1196795254945755)
-        assert(value: -60.59420508956768, expectation: 0.07005861401557922)
-        assert(value: -94.01020528870848, expectation: -0.02702281065285206)
-        assert(value: 38.332092573108895, expectation: 0.20273122191429138)
-        assert(value: -5.006735942532994, expectation: -0.6457372307777405)
-        assert(value: 1.9261641977405697, expectation: -0.005666222423315048)
+        assert(value: -40.10296170490728, expectation: -0.2860904050772242)
+        assert(value: 54.06423169761942, expectation: 0.0465919813487467)
+        assert(value: 84.54465264447907, expectation: -0.11967957279095182)
+        assert(value: -60.59420508956768, expectation: 0.07005863712208582)
+        assert(value: -94.01020528870848, expectation: -0.027022796869847838)
+        assert(value: 38.332092573108895, expectation: 0.20273126067245809)
+        assert(value: -5.006735942532994, expectation: -0.6457371912090442)
+        assert(value: 1.9261641977405697, expectation: -0.005666276596107776)
     }
 
     func assert(value: Double, expectation: Double, file: StaticString = #file, line: UInt = #line) {
@@ -42,19 +43,13 @@ final class OpenSimplex2S_3D_Tests: XCTestCase {
     func testMatrix3D_1() {
         let noise = OpenSimplex2S(seed: 1279, frequency: 0.007)
         let size = 256
-        let matrix = noise.matrix3D(width: size, height: size, depth: size)
-        print(matrix.count)
-        print(matrix[0].count)
-        print(matrix[0][0].count)
-        animate(matrix: matrix, frameRate: 60, loop: true, path: "/Users/proxpero/Images/Animations/test4.gif")
+        let matrix: Matrix3D = .monochrome(width: size, height: size, depth: size, evaluate: noise.evaluate(_:_:_:))
+        matrix.animated(frameRate: 60, filepath: "/Users/proxpero/Images/Animations/test4.gif")
     }
 
     func testMatrix3D_2() {
         let noise = OpenSimplex2S(seed: 1279, frequency: 0.007)
-        let matrix = noise.matrix3D(size: -100 ... 100, samples: 257)
-        print(matrix.count)
-        print(matrix[0].count)
-        print(matrix[0][0].count)
-        animate(matrix: matrix, frameRate: 60, loop: true, path: "/Users/proxpero/Images/Animations/\(#function).gif")
+        let matrix: Matrix3D = .monochrome(width: 200, height: 100, depth: 200, evaluate: noise.evaluate(_:_:_:))
+        matrix.animated(frameRate: 60, filepath: "/Users/proxpero/Images/Animations/\(#function).gif")
     }
 }

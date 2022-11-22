@@ -1,3 +1,4 @@
+import Gypsum
 import SnapshotTesting
 import XCTest
 @testable import NoiseV2
@@ -13,9 +14,8 @@ class PingPongTests: XCTestCase {
                 strength: 4.0,
                 weightedStrength: 0.0
             )
-        let matrix = noise.matrix2D(width: 256, height: 256)
-        let image: NSImage = .image(from: matrix)
-        assertSnapshot(matching: image, as: .image)
+        let matrix: Matrix2D = .monochrome(width: 256, height: 256, evaluate: noise.evaluate(_:_:))
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 
     func testPingPong2() {
@@ -28,8 +28,7 @@ class PingPongTests: XCTestCase {
                 strength: 2.0,
                 weightedStrength: 0.0
             )
-        let matrix = noise.matrix2D(width: 256, height: 256)
-        let image: NSImage = .image(from: matrix)
-        assertSnapshot(matching: image, as: .image)
+        let matrix: Matrix2D = .monochrome(width: 256, height: 256, evaluate: noise.evaluate(_:_:))
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 }

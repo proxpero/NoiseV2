@@ -10,24 +10,24 @@ final class OpenSimplex2S_2D_Tests: XCTestCase {
     }
 
     func test_positive_values() {
-        assert(value: 35.98280336997802, expectation: -0.21916985511779785)
-        assert(value: 56.87238745425168, expectation: 0.6978500485420227)
-        assert(value: 16.433779956417368, expectation: -0.07597653567790985)
-        assert(value: 38.16934163187286, expectation: 0.16735444962978363)
+        assert(value: 35.98280336997802, expectation: -0.21916977831988227)
+        assert(value: 56.87238745425168, expectation: 0.6978495993136121)
+        assert(value: 16.433779956417368, expectation: -0.07597649695327024)
+        assert(value: 38.16934163187286, expectation: 0.16735417486094356)
     }
 
     func test_negative_values() {
-        assert(value: -28.030079764222165, expectation: -0.799645185470581)
-        assert(value: -79.06171938784037, expectation: 0.43900394439697266)
-        assert(value: -94.8182595076705, expectation: 0.33484625816345215)
-        assert(value: -26.325385481634157, expectation: -0.3525061011314392)
+        assert(value: -28.030079764222165, expectation: -0.7996448523437348)
+        assert(value: -79.06171938784037, expectation: 0.43900391622471724)
+        assert(value: -94.8182595076705, expectation: 0.33484571807050795)
+        assert(value: -26.325385481634157, expectation: -0.3525059942412214)
     }
 
     func test_integer_values() {
-        assert(value: 92, expectation: 0.1900099515914917)
-        assert(value: 47, expectation: -0.4192034900188446)
-        assert(value: 87, expectation: 0.3660953938961029)
-        assert(value: 12, expectation: 0.27647024393081665)
+        assert(value: 92, expectation: 0.19000977073906888)
+        assert(value: 47, expectation: -0.4192033726481913)
+        assert(value: 87, expectation: 0.3660954426062507)
+        assert(value: 12, expectation: 0.27647023414264094)
     }
 
     func testExpectedRange() {

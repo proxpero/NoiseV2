@@ -1,3 +1,5 @@
+import Math
+
 extension NoiseSource {
     func pingPong(
         seed: Seed,

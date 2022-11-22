@@ -10,7 +10,7 @@ let package = Package(
     products: [
         .library(
             name: "NoiseV2",
-            targets: ["NoiseV2"]
+            targets: ["NoiseV2", "Gypsum", "Math"]
         ),
     ],
     dependencies: [
@@ -26,20 +26,29 @@ let package = Package(
                 .product(name: "Benchmark", package: "swift-benchmark")
             ]
         ),
-        .executableTarget(
-            name: "CLI",
-            dependencies: [
-                "NoiseV2"
-            ]
-        ),
+//        .executableTarget(
+//            name: "CLI",
+//            dependencies: [
+//                "NoiseV2"
+//            ]
+//        ),
         .target(
             name: "NoiseV2",
-            dependencies: []
+            dependencies: ["Math"]
+        ),
+        .target(
+            name: "Gypsum",
+            dependencies: ["Math"]
+        ),
+        .target(
+            name: "Math"
         ),
         .testTarget(
             name: "NoiseV2Tests",
             dependencies: [
                 "NoiseV2",
+                "Gypsum",
+                "Math",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ],
             exclude: [
