@@ -9,6 +9,6 @@ final class ConstantTests: XCTestCase {
         let noise: NoiseSource = ConstantNoiseSource(value: -1)
         let matrix = noise.matrix2D(width: 200, height: 200)
         XCTAssertEqual(matrix, Matrix2D(width: 200, height: 200, fill: .black))
-        assertSnapshot(matching: matrix.image, as: .image, record: true)
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 }

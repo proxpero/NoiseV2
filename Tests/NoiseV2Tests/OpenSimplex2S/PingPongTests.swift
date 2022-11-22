@@ -14,7 +14,7 @@ class PingPongTests: XCTestCase {
                 weightedStrength: 0.0
             )
         let matrix = noise.matrix2D(width: 256, height: 256)
-        assertSnapshot(matching: matrix.image, as: .image, record: true)
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 
     func testPingPong2() {
@@ -28,6 +28,6 @@ class PingPongTests: XCTestCase {
                 weightedStrength: 0.0
             )
         let matrix = noise.matrix2D(width: 256, height: 256)
-        assertSnapshot(matching: matrix.image, as: .image, record: true)
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 }

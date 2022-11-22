@@ -11,12 +11,12 @@ extension NoiseSource {
 struct Custom2D: NoiseSource {
     let transform: (Double, Double) -> Output
 
-    func evaluate(_ x: Double, _ y: Double) -> Output {
-        transform(x, y)
-    }
-
     func evaluate(_ x: Double) -> Output {
         fatalError()
+    }
+
+    func evaluate(_ x: Double, _ y: Double) -> Output {
+        transform(x, y)
     }
 
     func evaluate(_ x: Double, _ y: Double, _ z: Double) -> Output {

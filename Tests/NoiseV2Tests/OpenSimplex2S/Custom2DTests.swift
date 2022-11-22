@@ -13,7 +13,7 @@ final class Custom2DTests: XCTestCase {
         let noise: NoiseSource = Custom2D.horizontalSigmoid(start: start, end: end, width: width)
         let matrix = noise.matrix2D(width: width, height: height)
         
-        assertSnapshot(matching: matrix.image, as: .image, record: true)
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 
     func testHorizontalSigmoidDouble() {
@@ -27,7 +27,7 @@ final class Custom2DTests: XCTestCase {
         let noise: NoiseSource = Custom2D.horizontalSigmoidDouble(start: start, r1: r1, middle: middle, r2: r2, end: end, width: width)
         let matrix = noise.matrix2D(width: width, height: height)
 
-        assertSnapshot(matching: matrix.image, as: .image, record: true)
+        assertSnapshot(matching: matrix.image, as: .image)
     }
 
     func testHorizontalSigmoidDoubleMask() {
@@ -47,13 +47,7 @@ final class Custom2DTests: XCTestCase {
         let noise = br.added(to: sigmoid)
             .clamped(to: -1 ... 1)
 
-
-//        let noise: NoiseSource = br.masked(by: sigmoid)
-//        let noise: NoiseSource = br.multiplied(by: sigmoid)
-//            .clamped(to: -1 ... 1)
-//            .mapping(current: -2 ... 2, target: -1 ... 1)
-
-        assertSnapshot(matching: noise.matrix2D(width: width, height: height).image, as: .image, record: true)
+        assertSnapshot(matching: noise.matrix2D(width: width, height: height).image, as: .image)
     }
 
     func testCustom2D() {
