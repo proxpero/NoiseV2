@@ -44,9 +44,9 @@ final class Custom2DTests: XCTestCase {
         let r2 = 0.6 ... 0.8
         let end = 1.0
         let sigmoid: NoiseSource = Custom2D.horizontalSigmoidDouble(start: start, r1: r1, middle: middle, r2: r2, end: end, width: width)
-            .mapping(current: -1 ... 1, target: -3 ... 3)
-        let noise = br.added(to: sigmoid)
-            .clamped(to: -1 ... 1)
+            .map(current: -1 ... 1, target: -3 ... 3)
+        let noise = br.adding(to: sigmoid)
+            .clamping(to: -1 ... 1)
         let matrix: Matrix2D = .monochrome(width: width, height: height, evaluate: noise.evaluate(_:_:))
         assertSnapshot(matching: matrix.image, as: .image)
     }

@@ -41,7 +41,7 @@ extension Custom2D {
             }
 
             else {
-                let t = map(value: position, current: start ... end, target: 0 ... 1)
+                let t = Math.map(value: position, current: start ... end, target: 0 ... 1)
                 let value = smoothestStep(t).map(current: 0 ... 1, target: -1 ... 1)
                 return value
             }
@@ -63,11 +63,11 @@ extension Custom2D {
             if position < r1.lowerBound {
                 return start
             } else if r1.contains(position) {
-                let t = map(value: position, current: r1, target: 0 ... 1)
+                let t = Math.map(value: position, current: r1, target: 0 ... 1)
                 let value = smoothestStep(t).map(current: 0 ... 1, target: start ... middle)
                 return value
             } else if r2.contains(position) {
-                let t = map(value: position, current: r2, target: 0 ... 1)
+                let t = Math.map(value: position, current: r2, target: 0 ... 1)
                 let value = smoothestStep(t).map(current: 0 ... 1, target: middle ... end)
                 return value
             } else if position > r1.upperBound, position < r2.lowerBound {

@@ -29,8 +29,8 @@ final class OpenSimplex2STests: XCTestCase {
         let other: NoiseSource = OpenSimplex2S(seed: 123)
             .brownian(seed: 1337, gain: 0.0, lacunarity: 2.0, octaves: 6, weightedStrength: 0.0)
         let sum = noise
-            .added(to: other)
-            .mapping(current: -2 ... 2, target: -1 ... 1)
+            .adding(to: other)
+            .map(current: -2 ... 2, target: -1 ... 1)
         let matrix: Matrix2D = .monochrome(width: width, height: height, evaluate: sum.evaluate(_:_:))
         assertSnapshot(matching: matrix.image, as: .image)
     }
