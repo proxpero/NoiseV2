@@ -1,3 +1,5 @@
+import Math
+
 extension NoiseSource {
     func brownian(
         seed: Seed,
@@ -62,7 +64,7 @@ struct BrownianMotion<S: NoiseSource>: FractalType {
 
     func evaluate(_ x: Double, _ y: Double) -> Output {
         var seed = seed
-        var sum: Output = 1
+        var sum: Output = 0
         var amp = bounding
         var x = x
         var y = y

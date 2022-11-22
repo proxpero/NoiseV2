@@ -1,3 +1,5 @@
+import Math
+
 public struct Pixel: Equatable {
     public let red: UInt8
     public let green: UInt8
@@ -13,4 +15,16 @@ public struct Pixel: Equatable {
         self.green = green
         self.blue = blue
     }
+
+    public init(monochrome value: Double) {
+        let value = UInt8(value.map(current: -1 ... 1, target: 0 ... 255))
+        self.red = value
+        self.green = value
+        self.blue = value
+    }
+}
+
+extension Pixel {
+    public static let black: Self = .init(monochrome: -1)
+    public static let white: Self = .init(monochrome: 1)
 }

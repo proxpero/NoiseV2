@@ -1,4 +1,6 @@
 import Foundation
+import Gypsum
+import Math
 
 typealias Seed = Int
 typealias Output = Double
@@ -10,60 +12,26 @@ protocol NoiseSource {
 }
 
 extension NoiseSource {
-    func matrix2D(width: Int, height: Int) -> [[Output]] {
-        var result: [[Double]] = []
-        for y in 0 ..< height {
-            var line: [Output] = []
-            for x in 0 ..< width {
-                let value = evaluate(Output(x), Output(y))
-                line.append(value)
-            }
-            result.append(line)
+    func matrix2D(width: Int, height: Int) -> Matrix2D {
+        Matrix2D(width: width, height: height) { x, y in
+            .init(monochrome: evaluate(x, y))
         }
-        return result
     }
 
-    func matrix3D(size: ClosedRange<Int>, samples: Int) -> [[[Double]]] {
-        var result: [[[Double]]] = []
-        let increment = Double(size.magnitude) / Double(samples)
-        let interval = stride(from: Double(size.lowerBound), through: Double(size.upperBound), by: increment)
-        for z in interval {
-            var plane: [[Double]] = []
-            for y in interval {
-                var line: [Double] = []
-                for x in interval {
-                    let value = evaluate(Double(x), Double(y), Double(z))
-                    line.append(value)
-                }
-                plane.append(line)
-            }
-            result.append(plane)
+    func matrix3D(width: Int, height: Int, depth: Int) -> Matrix3D {
+        Matrix3D(width: width, height: height, depth: depth) { x, y, z in
+            .init(monochrome: evaluate(x, y, z))
         }
-        return result
-    }
-
-    func matrix3D(width: Int, height: Int, depth: Int) -> [[[Double]]] {
-        var result: [[[Double]]] = []
-        for z in 0 ..< depth {
-            var plane: [[Double]] = []
-            for y in 0 ..< height {
-                var line: [Double] = []
-                for x in 0 ..< depth {
-                    let value = evaluate(Double(x), Double(y), Double(z))
-                    line.append(value)
-                }
-                plane.append(line)
-            }
-            result.append(plane)
-        }
-        return result
     }
 }
 
-
 extension NoiseSource where Output: FloatingPoint {
-    func added<S: NoiseSource>(to other: S) -> some NoiseSource {
-        AddedNoiseSource(s0: self, s1: other)
+    func added<S: NoiseSource>(to other: S, weight: Double = 0.5) -> some NoiseSource {
+        AddedNoiseSource(s0: self, s1: other, weight: weight)
+    }
+
+    func masked<S: NoiseSource>(by other: S) -> some NoiseSource {
+        MaskedNoiseSource(s0: self, s1: other)
     }
 
     func clamped(to range: ClosedRange<Output>) -> some NoiseSource {
@@ -99,17 +67,59 @@ extension NoiseSource where Output: FloatingPoint {
 struct AddedNoiseSource<S0: NoiseSource, S1: NoiseSource>: NoiseSource {
     let s0: S0
     let s1: S1
+    let weight: Double
 
     func evaluate(_ x: Double) -> Output {
-        s0.evaluate(x) + s1.evaluate(x)
+        (s0.evaluate(x) * (1.0 - weight)) + (s1.evaluate(x) * weight)
     }
 
     func evaluate(_ x: Double, _ y: Double) -> Output {
-        s0.evaluate(x, y) + s1.evaluate(x, y)
+        s0.evaluate(x, y) * (1.0 - weight) + s1.evaluate(x, y) * weight
     }
 
     func evaluate(_ x: Double, _ y: Double, _ z: Double) -> Output {
         s0.evaluate(x, y, z) + s1.evaluate(x, y, z)
+    }
+}
+
+struct MaskedNoiseSource<S0: NoiseSource, S1: NoiseSource>: NoiseSource {
+    let s0: S0
+    let s1: S1
+
+    func evaluate(_ x: Double) -> Output {
+        let v2 = s1.evaluate(x)
+        if v2 == -1 {
+            return -1
+        } else if v2 == 1 {
+            return 1
+        }
+
+        let v1 = s0.evaluate(x)
+        return (v1 + v2).map(current: -2 ... 2, target: -1 ... 1)
+    }
+
+    func evaluate(_ x: Double, _ y: Double) -> Output {
+        let v2 = s1.evaluate(x, y)
+        if v2 == -1 {
+            return -1
+        } else if v2 == 1 {
+            return 1
+        }
+
+        let v1 = s0.evaluate(x, y)
+        return v1 + v2
+    }
+
+    func evaluate(_ x: Double, _ y: Double, _ z: Double) -> Output {
+        let v2 = s1.evaluate(x, y, z)
+        if v2 == -1 {
+            return -1
+        } else if v2 == 1 {
+            return 1
+        }
+
+        let v1 = s0.evaluate(x, y, z)
+        return v1 + v2
     }
 }
 
@@ -146,7 +156,7 @@ struct ClampedNoiseSource<S: NoiseSource>: NoiseSource {
     }
 }
 
-struct ConstantNoiseSource<S: NoiseSource>: NoiseSource {
+struct ConstantNoiseSource: NoiseSource {
     let value: Output
 
     func evaluate(_ x: Double) -> Output {

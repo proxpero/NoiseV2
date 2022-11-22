@@ -1,5 +1,6 @@
-@testable import NoiseV2
+import Gypsum
 import XCTest
+@testable import NoiseV2
 
 final class OpenSimplex2S_3D_Tests: XCTestCase {
     let noise = OpenSimplex2S(seed: 3301, variant3D: .classic)
@@ -43,18 +44,12 @@ final class OpenSimplex2S_3D_Tests: XCTestCase {
         let noise = OpenSimplex2S(seed: 1279, frequency: 0.007)
         let size = 256
         let matrix = noise.matrix3D(width: size, height: size, depth: size)
-        print(matrix.count)
-        print(matrix[0].count)
-        print(matrix[0][0].count)
-        animate(matrix: matrix, frameRate: 60, loop: true, path: "/Users/proxpero/Images/Animations/test4.gif")
+        matrix.animated(frameRate: 60, filepath: "/Users/proxpero/Images/Animations/test4.gif")
     }
 
     func testMatrix3D_2() {
         let noise = OpenSimplex2S(seed: 1279, frequency: 0.007)
-        let matrix = noise.matrix3D(size: -100 ... 100, samples: 257)
-        print(matrix.count)
-        print(matrix[0].count)
-        print(matrix[0][0].count)
-        animate(matrix: matrix, frameRate: 60, loop: true, path: "/Users/proxpero/Images/Animations/\(#function).gif")
+        let matrix = noise.matrix3D(width: 200, height: 100, depth: 200)
+        matrix.animated(frameRate: 60, filepath: "/Users/proxpero/Images/Animations/\(#function).gif")
     }
 }
